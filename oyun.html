@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f0520">
+<title>Zeka Oyunları Atölyesi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:'Nunito',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(900px 500px at 10% -10%, #4c1d95 0%, transparent 60%), radial-gradient(800px 500px at 90% 0%, #9d174d 0%, transparent 55%), linear-gradient(180deg,#1a0533,#0f0520 45%,#0a0218);color:#f5f3ff;min-height:100vh;display:flex;flex-direction:column}
+h1,h2,h3{font-family:'Baloo 2','Nunito',sans-serif}
+a{color:#c4b5fd}
+.top{position:sticky;top:0;z-index:50;padding:18px 16px 12px;text-align:center;background:rgba(20,5,45,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(167,139,250,.35)}
+.top h1{margin:0;font-size:36px;letter-spacing:4px;background:linear-gradient(90deg,#fff,#e9d5ff,#f0abfc,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
+footer{margin-top:auto;padding:14px;text-align:center;background:#1e0a3d;border-top:1px solid #7c3aed55;font-weight:800;letter-spacing:2px;font-size:12px;color:#ddd6fe}
+.wrap{max-width:1080px;width:100%;margin:0 auto;padding:16px;flex:1}
+.card{background:linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));border:1px solid rgba(167,139,250,.35);border-radius:24px;box-shadow:0 18px 40px rgba(0,0,0,.35);padding:20px}
+.tabs{display:flex;gap:8px;margin-bottom:14px;background:rgba(15,5,32,.7);padding:6px;border-radius:999px;border:1px solid rgba(167,139,250,.35)}
+.tab{flex:1;padding:13px;border-radius:999px;border:0;background:transparent;color:#e9d5ff;font-weight:800;font-size:14px;cursor:pointer;touch-action:manipulation}
+.tab.active{background:linear-gradient(90deg,#7c3aed,#db2777);color:#fff}
+input{width:100%;padding:14px;border-radius:14px;border:1.5px solid rgba(167,139,250,.45);background:rgba(15,5,32,.85);color:#fff;margin:6px 0;font-size:15px;font-weight:600;outline:none;touch-action:manipulation}
+input:focus{border-color:#f0abfc;box-shadow:0 0 0 4px rgba(240,171,252,.18)}
+button{border:0;border-radius:14px;padding:13px 16px;font-weight:900;cursor:pointer;color:#fff;background:linear-gradient(135deg,#7c3aed,#db2777);font-size:14px;min-height:44px;box-shadow:0 10px 22px rgba(124,58,237,.35);touch-action:manipulation;-webkit-user-select:none;user-select:none}
+button.ghost{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);box-shadow:none}
+button.active{background:#a78bfa;color:#1e0a3d;box-shadow:0 0 0 2px #e9d5ff}
+button.green{background:linear-gradient(135deg,#16a34a,#22c55e)}
+button.red{background:linear-gradient(135deg,#dc2626,#f87171)}
+button.orange{background:linear-gradient(135deg,#ea580c,#fb923c)}
+.err{color:#fda4af;font-size:13px;min-height:18px;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.gameCard{position:relative;overflow:hidden;border-radius:26px;padding:22px;cursor:pointer;transition:.15s;touch-action:manipulation}
+.gameCard:hover{transform:translateY(-5px);border-color:#f0abfc}
+.gameCard .icon{font-size:52px}
+.gameCard h3{margin:8px 0 12px;font-size:24px}
+.gameCard button{width:100%;font-size:16px;padding:14px}
+.layout{display:grid;grid-template-columns:1fr;gap:14px}
+.boardK{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;background:#6d28d9;padding:10px;border-radius:14px;aspect-ratio:1/1;max-width:460px;margin:auto}
+.boardA{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:440px;margin:auto;background:#1e0a3d;padding:8px;border-radius:12px}
+.boardR{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;background:#166534;padding:6px;border-radius:12px;aspect-ratio:1/1;max-width:460px;margin:auto}
+.cellK{background:#a78bfa;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;aspect-ratio:1/1;position:relative;touch-action:manipulation}
+.cellK.legal{outline:3px solid #fef08a} .cellK.sel{outline:3px solid #facc15}
+.stone{width:82%;height:82%;border-radius:50%;box-shadow:0 4px 8px rgba(0,0,0,.45)} .stone.purple{background:radial-gradient(circle at 35% 30%,#bfdbfe,#2563eb 55%,#1e3a8a)} .stone.orange{background:radial-gradient(circle at 35% 30%,#ffedd5,#f97316 55%,#9a3412)}
+.cellA{aspect-ratio:1;border:0;border-radius:6px;background:#e9d5ff;cursor:pointer;touch-action:manipulation} .cellA.black{background:#111;border-radius:50%;transform:scale(.78);box-shadow:0 0 0 2px #a78bfa} .cellA.white{background:#fff;border-radius:50%;transform:scale(.78);box-shadow:0 0 0 2px #fbbf24} .cellA.wall{background:#dc2626} .cellA.vm{background:#86efac;outline:2px solid #22c55e} .cellA.vw{background:#fde68a}
+.cellR{background:#22a34a;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;aspect-ratio:1/1;touch-action:manipulation} .cellR.legal{outline:2px solid #fde68a} .disc{width:82%;height:82%;border-radius:50%} .disc.b{background:radial-gradient(circle at 35% 30%,#444,#000)} .disc.w{background:radial-gradient(circle at 35% 30%,#fff,#cbd5e1)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:center;margin:10px 0}
+.stat{background:rgba(15,5,32,.75);border:1px solid rgba(167,139,250,.30);border-radius:16px;padding:12px;flex:1;min-width:90px;text-align:center}
+.stat b{display:block;font-size:11px;color:#c4b5fd} .stat span{font-size:18px;font-weight:800}
+.hidden{display:none!important}
+.loginCard{max-width:520px;margin:18px auto}
+.loginCard h2{margin:0;text-align:center;font-size:22px}
+.topBarUser{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;max-width:1080px;margin:10px auto 0;padding:0 16px;font-size:13px}
+.pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:800;background:#7c3aed}
+.pill.green{background:#16a34a}.pill.orange{background:#ea580c}
+.adminCard{margin-bottom:14px}
+.userRow{background:rgba(15,5,32,.72);border:1px solid rgba(167,139,250,.30);border-radius:18px;padding:14px;margin:8px 0}
+.userRowTop{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center}
+.miniStat{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.miniStat div{background:#1e0a3d;border-radius:8px;padding:7px;text-align:center}
+.miniStat b{display:block;font-size:10px;color:#c4b5fd}
+.miniStat span{font-size:15px;font-weight:800}
+.gameBreak{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+.gameBreak div{background:#1e0a3d;border:1px solid #7c3aed33;border-radius:8px;padding:7px;text-align:center;font-size:12px}
+.gameBreak b{display:block;font-size:11px}
+.welcomeBox{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+.recent-match{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;border-bottom:1px solid #7c3aed33;padding:7px 2px;font-size:12px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+@media(max-width:600px){.top h1{font-size:24px}.card{padding:16px;border-radius:20px}.miniStat{grid-template-columns:repeat(2,1fr)}.gameBreak{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1>ZEKA OYUNLARI ATÖLYESİ</h1>
+  <div class="topBarUser" id="topUserBar">
+    <span id="topUserText">Giriş yapılmadı</span>
+    <span id="topUserBtns" style="display:flex;gap:6px;flex-wrap:wrap"></span>
+  </div>
+</div>
+
+<div class="wrap">
+  <!-- GİRİŞ EKRANI -->
+  <div id="loginView">
+    <div class="card loginCard">
+      <h2>ZEKA OYUNLARI'NA GİRİŞ</h2>
+      <div class="tabs" style="margin-top:14px">
+        <button class="tab active" id="tabKullanici" onclick="switchLoginTab('kullanici')">KULLANICI</button>
+        <button class="tab" id="tabYonetici" onclick="switchLoginTab('yonetici')">YÖNETİCİ</button>
+      </div>
+      <div id="loginKullanici">
+        <label style="font-size:12px;color:#c4b5fd;font-weight:800">KULLANICI ADI</label>
+        <input id="loginUserName" placeholder="Kullanıcı adı" autocomplete="username">
+        <label style="font-size:12px;color:#c4b5fd;font-weight:800">ŞİFRE</label>
+        <input id="loginUserPass" type="password" placeholder="Şifre" autocomplete="current-password" onkeydown="if(event.key==='Enter')loginAsUser()">
+        <button class="green" style="width:100%;margin-top:8px" onclick="loginAsUser()">Kullanıcı Olarak Gir</button>
+        <div class="err" id="loginUserErr"></div>
+      </div>
+      <div id="loginYonetici" class="hidden">
+        <label style="font-size:12px;color:#c4b5fd;font-weight:800">YÖNETİCİ ŞİFRESİ</label>
+        <input id="loginAdminPass" type="password" placeholder="Şifre" autocomplete="current-password" onkeydown="if(event.key==='Enter')loginAsAdmin()">
+        <button style="width:100%;margin-top:8px" onclick="loginAsAdmin()">Yönetici Olarak Gir</button>
+        <div class="err" id="loginAdminErr"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- YÖNETİCİ PANELİ -->
+  <div id="adminView" class="hidden">
+    <div class="card" style="margin-bottom:14px">
+      <div class="welcomeBox">
+        <div><h2 style="margin:0">Yönetici Paneli</h2></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="goToHub()">Oyunlara Git</button>
+          <button class="ghost" onclick="logout()">Çıkış Yap</button>
+        </div>
+      </div>
+    </div>
+    <div class="card adminCard">
+      <h3 style="margin:0">Kullanıcı Ekle</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <input id="newUserName" placeholder="Ad Soyad">
+        <input id="newUserUsername" placeholder="Kullanıcı adı (örn: ali12)">
+      </div>
+      <input id="newUserPass" placeholder="Şifre" type="text">
+      <button class="green" style="width:100%" onclick="addUserFromForm()">Kullanıcıyı Ekle</button>
+      <div class="err" id="addUserMsg"></div>
+    </div>
+    <div class="card adminCard">
+      <h3 style="margin:0">Genel Rapor</h3>
+      <div id="adminGeneral"></div>
+    </div>
+    <div class="card adminCard">
+      <h3 style="margin:0">Kullanıcı Raporları ve AI Özelleştirme</h3>
+      <div id="adminUserList"></div>
+      <div class="row">
+        <button class="ghost" onclick="cloudLoadAndRefresh()">Listeyi Yenile (Buluttan Çek)</button>
+        <button class="orange" onclick="clearAllReports()">Tüm Raporları Sıfırla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OYUN SEÇİM EKRANI (HUB) -->
+  <div id="hubView" class="hidden">
+    <div class="card" style="margin-bottom:14px">
+      <div class="welcomeBox">
+        <div style="flex:1"><h2 style="margin:0">Hoş geldin, <span id="welcomeName">Oyuncu</span>!</h2></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="ghost" id="hubAdminBtn" onclick="goToAdmin()" style="display:none">Yönetici Paneli</button>
+          <button class="orange" onclick="logout()">Çıkış</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:14px">
+      <b>Senin İstatistiklerin</b>
+      <div id="localStats"></div>
+      <div id="myPerGame" style="margin-top:8px"></div>
+    </div>
+
+    <div class="grid">
+      <div class="card gameCard" onclick="openGame('kure')">
+        <div class="icon">🔵🟠</div>
+        <h3>KÜRE</h3>
+        <button style="width:100%">Oyuna Gir →</button>
+      </div>
+      <div class="card gameCard" onclick="openGame('abluka')">
+        <div class="icon">🧱♟️</div>
+        <h3>ABLUKA</h3>
+        <button style="width:100%">Oyuna Gir →</button>
+      </div>
+      <div class="card gameCard" onclick="openGame('reversi')">
+        <div class="icon">⚫⚪</div>
+        <h3>REVERSİ</h3>
+        <button style="width:100%">Oyuna Gir →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KÜRE OYUNU -->
+  <div id="gameKure" class="hidden">
+    <button class="ghost" onclick="backHub()">← Tüm Oyunlara Dön</button>
+    <div class="layout" style="margin-top:12px">
+      <div class="card">
+        <h2 style="margin:0;text-align:center">🔵 KÜRE 🟠</h2>
+        <div id="kStatus" style="text-align:center;font-weight:800;margin:10px 0">Mavi başlar</div>
+        <div class="row">
+          <div class="stat"><b>MAVİ</b><span id="kMorInfo">Set 0 • Aldı 0</span></div>
+          <div class="stat"><b>TURUNCU</b><span id="kTurInfo">Set 0 • Aldı 0</span></div>
+        </div>
+        <div id="kBoard" class="boardK"></div>
+        <div class="row">
+          <button onclick="kNew()">Yeni Oyun</button>
+          <button class="ghost" onclick="kUndo()">Geri Al</button>
+          <button class="ghost" onclick="kHint()">İpucu</button>
+          <button class="ghost" onclick="kToggleMode()">Mod: <span id="kModeTxt">Serbest</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABLUKA OYUNU -->
+  <div id="gameAbluka" class="hidden">
+    <button class="ghost" onclick="backHub()">← Tüm Oyunlara Dön</button>
+    <div class="layout" style="margin-top:12px">
+      <div class="card">
+        <h2 style="margin:0;text-align:center">🧱 ABLUKA ♟️</h2>
+        <div id="aMsg" style="text-align:center;font-weight:800;margin:10px 0">Sen başlıyorsun. Siyah sensin.</div>
+        <div id="aBoard" class="boardA"></div>
+        <div style="text-align:center;margin-top:10px"><b>Skor: <span id="aScore">0 - 0</span></b> • <span id="aInfo"></span></div>
+        <div class="row">
+          <button onclick="aNew()">Yeni Maç</button>
+          <button class="ghost" onclick="aUndo()">Geri Al</button>
+          <button class="ghost" onclick="aHint()">İpucu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REVERSİ OYUNU -->
+  <div id="gameReversi" class="hidden">
+    <button class="ghost" onclick="backHub()">← Tüm Oyunlara Dön</button>
+    <div class="layout" style="margin-top:12px">
+      <div class="card">
+        <h2 style="margin:0;text-align:center">⚫ REVERSİ ⚪</h2>
+        <div id="rStatus" style="text-align:center;font-weight:800;margin:10px 0">Senin sıran: Siyah</div>
+        <div id="rBoard" class="boardR"></div>
+        <div style="display:flex;justify-content:space-between;max-width:460px;margin:10px auto 0;font-weight:800">
+          <span>Siyah: <span id="rBlack">2</span></span>
+          <span>Beyaz: <span id="rWhite">2</span></span>
+          <span>Boş: <span id="rEmpty">60</span></span>
+        </div>
+        <div class="row">
+          <button onclick="rNew()">Yeni Oyun</button>
+          <button class="ghost" onclick="rUndo()">Geri Al</button>
+          <button class="ghost" onclick="rHint()">İpucu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>ZEKA OYUNLARI ATÖLYESİ</footer>
+
+<script>
+"use strict";
+
+// ==========================================
+// NPOINT.IO BULUT AYARI
+// ==========================================
+const NPOINT_BIN_ID = 'e591efc586d3a2d7e0d7';
+
+let currentUserId = 'misafir';
+let currentUser = 'Oyuncu';
+let currentRole = null;
+
+function normalizeUser(s){return String(s||'yerel').trim().toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g, '')||'yerel';}
+function aiKey(base){return base+'__yerel_'+normalizeUser(currentUserId);}
+function escapeHtml(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+let _quotaWarned=false;
+function safeSet(key,val){ try{ localStorage.setItem(key,val); return true; }catch(e){ if(!_quotaWarned){ _quotaWarned=true; alert('Tarayıcı depolama alanı dolu.'); } return false; } }
+function rnd5(a){ return Array.isArray(a)?a.map(rnd5):(typeof a==='number'?Math.round(a*1e5)/1e5:a); }
+function netShapeOk(n,h,i,p){ try{ return !!(n&&n.W1&&n.W1.length===h&&n.W1[0].length===i&&n.B1&&n.B1.length===h&&n.Wp&&n.Wp.length===p&&n.Wp[0].length===h&&n.Bp&&n.Bp.length===p&&n.Wv&&n.Wv.length===h); }catch(e){ return false; } }
+function cancelAllAI(){ kTok++; abTok++; rTok++; kAIThinking=false; abAIThinking=false; rAIThinking=false; }
+
+// ---------- YAPAY ZEKA ÇEKİRDEĞİ ----------
+function randn(){let u=0,v=0; while(u===0) u=Math.random(); v=Math.random(); return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function sGamma(s){ if(s<1){const u=Math.random(); return sGamma(s+1)*Math.pow(u,1/s);} const d=s-1/3,c=1/Math.sqrt(9*d); while(true){const x=randn(); let vv=1+c*x; if(vv<=0) continue; vv=vv*vv*vv; const u=Math.random(); if(u<1-0.0331*(x*x)*(x*x)) return d*vv; if(Math.log(u)<0.5*x*x+d*(1-vv+Math.log(vv))) return d*vv;}}
+function sDir(a,n){const xs=[];let s=0; for(let i=0;i<n;i++){const g=sGamma(a); xs.push(g); s+=g;} return xs.map(x=>x/s);}
+function softmax(l){const m=Math.max(...l); const ex=l.map(x=>Math.exp(x-m)); const s=ex.reduce((a,b)=>a+b,0); return ex.map(x=>x/s);}
+function clipG(v){ return v>5?5:(v<-5?-5:v); }
+
+const aiOpponentProfiles={};
+function aiProfileKey(game){ return aiKey('OPPONENT_STYLE_V1_'+game.toUpperCase()); }
+function aiGetProfile(game){
+  const key=aiProfileKey(game);
+  if(aiOpponentProfiles[key]) return aiOpponentProfiles[key];
+  let d=null; try{ d=JSON.parse(localStorage.getItem(key)||'null'); }catch(e){}
+  const p=(d&&typeof d.moves==='number')?{moves:d.moves,strong:d.strong||0,weak:d.weak||0,qualitySum:d.qualitySum||0}:{moves:0,strong:0,weak:0,qualitySum:0};
+  aiOpponentProfiles[key]=p; return p;
+}
+function aiObserveMove(game,policy,index){
+  if(!currentUserId||!Array.isArray(policy)||!policy.length||!Number.isInteger(index)) return;
+  const p=aiGetProfile(game), vals=policy.map(v=>Number.isFinite(v)?Math.max(0,v):0);
+  const best=Math.max(...vals), chosen=vals[index]||0; if(best<=0) return;
+  const quality=Math.max(0,Math.min(1,chosen/best));
+  p.moves++; p.qualitySum+=quality;
+  if(quality>=0.72) p.strong++; else if(quality<0.38) p.weak++;
+  try{localStorage.setItem(aiProfileKey(game),JSON.stringify(p));}catch(e){}
+}
+function aiAdaptiveSims(game,base){
+  const p=aiGetProfile(game); if(!p.moves) return base;
+  const quality=p.qualitySum/p.moves;
+  return Math.max(base,Math.min(Math.round(base*(0.85+quality*0.9)),base*1.75));
+}
+
+// ---------- KÜRE ----------
+let kTok=0, abTok=0, rTok=0;
+const K_N=49, K_HIDDEN=128, K_POLICY=392, K_INPUT=58;
+let kBoard=[], kTurn=1, kSetMor=0, kSetTur=0, kTakenMor=0, kTakenTur=0, kSel=null, kLocked=null, kHist=[], kOver=false, kMatchOver=false, kMode='free', kMyColor=1, kAIThinking=false, kOpponent='ai';
+let kStartedAt=Date.now(), kTraining={games:0,wins:0,draws:0,generation:1,recent:[],humanGames:0}, kReplay=[], kNet=null, kLoss=[], kEval=null, kTraj=[];
+function kRc(i){return [Math.floor(i/7),i%7]} function kIdx(r,c){return r*7+c} function kValid(r,c){return r>=0&&r<7&&c>=0&&c<7}
+function kStart(p){return p===1?6:0} function kEmpty(){const b=Array(49).fill(0); for(let c=0;c<7;c++){b[kIdx(0,c)]=-1; b[kIdx(6,c)]=1;} return b;}
+function kCreateNet(){const rnd=()=>(Math.random()-.5)*0.12; return {W1:Array.from({length:K_HIDDEN},()=>Array.from({length:K_INPUT},rnd)),B1:Array(K_HIDDEN).fill(0),Wp:Array.from({length:K_POLICY},()=>Array.from({length:K_HIDDEN},rnd)),Bp:Array(K_POLICY).fill(0),Wv:Array(K_HIDDEN).fill(0),Bv:0,vW1:Array.from({length:K_HIDDEN},()=>Array(K_INPUT).fill(0)),vB1:Array(K_HIDDEN).fill(0),vWp:Array.from({length:K_POLICY},()=>Array(K_HIDDEN).fill(0)),vBp:Array(K_POLICY).fill(0),vWv:Array(K_HIDDEN).fill(0),vBv:0};}
+function kEncode(b,p,tm,tt){ if(tm===undefined) tm=kTakenMor; if(tt===undefined) tt=kTakenTur; const o=[]; for(let i=0;i<49;i++) o.push(b[i]*p); o.push((p===1?tm:tt)/4, (p===1?tt:tm)/4); let myStones=0, oppStones=0; for(let i=0;i<49;i++){ if(b[i]===p) myStones++; else if(b[i]===-p) oppStones++; } o.push(myStones/49, oppStones/49); o.push((p===1?kSetMor:kSetTur)/4, (p===1?kSetTur:kSetMor)/4); o.push(p===1?1:0); o.push((kSetMor-kSetTur)/2); o.push(kHist.length/100); return o; }
+function kForward(inp,net=kNet){const h=[]; for(let j=0;j<K_HIDDEN;j++){let z=net.B1[j]; for(let i=0;i<K_INPUT;i++) z+=net.W1[j][i]*inp[i]; h[j]=z>0?z:0;} const logits=[]; for(let k=0;k<K_POLICY;k++){let z=net.Bp[k]; for(let j=0;j<K_HIDDEN;j++) z+=net.Wp[k][j]*h[j]; logits[k]=z;} const pol=softmax(logits); let v=net.Bv; for(let j=0;j<K_HIDDEN;j++) v+=net.Wv[j]*h[j]; return {h,policy:pol,value:Math.tanh(v)};}
+function kPred(b,p,tm,tt){return kForward(kEncode(b,p,tm,tt)).value;}
+function kTrainNet(samples,epochs=1){ if(!samples.length) return; const mom=0.9; let lr=0.005;
+  for(let ep=0;ep<epochs;ep++){ lr=lr*0.999;
+    for(let s of samples){ const x=s.x,pi=s.pi,z=s.z; const {h,policy,value}=kForward(x);
+      const dV=clipG(2*(value-z)*(1-value*value)); const dL=[]; for(let k=0;k<K_POLICY;k++) dL[k]=clipG(policy[k]-pi[k]);
+      const dh=[]; for(let j=0;j<K_HIDDEN;j++){let g=dV*kNet.Wv[j]; for(let k=0;k<K_POLICY;k++) g+=dL[k]*kNet.Wp[k][j]; dh[j]=clipG(g)*(h[j]>0?1:0);}
+      for(let j=0;j<K_HIDDEN;j++){const gr=clipG(dV*h[j]); kNet.vWv[j]=mom*kNet.vWv[j]-lr*gr; kNet.Wv[j]+=kNet.vWv[j];}
+      kNet.vBv=mom*kNet.vBv-lr*dV; kNet.Bv+=kNet.vBv;
+      for(let k=0;k<K_POLICY;k++){for(let j=0;j<K_HIDDEN;j++){const gr=clipG(dL[k]*h[j]); kNet.vWp[k][j]=mom*kNet.vWp[k][j]-lr*gr; kNet.Wp[k][j]+=kNet.vWp[k][j];} kNet.vBp[k]=mom*kNet.vBp[k]-lr*dL[k]; kNet.Bp[k]+=kNet.vBp[k];}
+      for(let j=0;j<K_HIDDEN;j++){for(let i=0;i<K_INPUT;i++){const gr=clipG(dh[j]*x[i]); kNet.vW1[j][i]=mom*kNet.vW1[j][i]-lr*gr; kNet.W1[j][i]+=kNet.vW1[j][i];} kNet.vB1[j]=mom*kNet.vB1[j]-lr*dh[j]; kNet.B1[j]+=kNet.vB1[j];}
+    }
+  }
+}
+function kIsFour(b,p){ const D=[[0,1],[1,0],[1,1],[1,-1]]; for(let r=0;r<7;r++) for(let c=0;c<7;c++){ for(const [dr,dc] of D){ let ok=true; for(let k=0;k<4;k++){ const rr=r+dr*k, cc=c+dc*k; if(!kValid(rr,cc) || b[kIdx(rr,cc)]!==p || rr===kStart(p)){ ok=false; break; } } if(ok) return true; } } return false; }
+const K_DIRS=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+function kMoves(b,p){ const res=[]; for(let from=0;from<49;from++){ if(b[from]!==p) continue; const [r,c]=kRc(from); const inS=(r===kStart(p)); for(let d=0;d<8;d++){ const [dr,dc]=K_DIRS[d]; const nr=r+dr,nc=c+dc; if(!kValid(nr,nc)) continue; if(b[kIdx(nr,nc)]!==0) continue; if(nr===kStart(p) && !inS) continue; if(inS){ if(p===1 && dr!==-1) continue; if(p===-1 && dr!==1) continue; } const nb=b.slice(); nb[from]=0; nb[kIdx(nr,nc)]=p; if(kIsFour(nb,p)) continue; res.push({from,to:kIdx(nr,nc),dir:d}); }} return res; }
+function kApply(b,m,p){ const nb=b.slice(); nb[m.from]=0; nb[m.to]=p; const caps=[]; for(const [dr,dc] of [[0,1],[1,0],[1,1],[1,-1]]){ for(const sgn of [1,-1]){ let rr=kRc(m.to)[0]+dr*sgn, cc=kRc(m.to)[1]+dc*sgn; const line=[]; while(kValid(rr,cc) && nb[kIdx(rr,cc)]===-p){line.push(kIdx(rr,cc)); rr+=dr*sgn; cc+=dc*sgn;} if(line.length && kValid(rr,cc) && nb[kIdx(rr,cc)]===p){ for(const ii of line) caps.push(ii); } } } for(const ii of [...new Set(caps)]) nb[ii]=0; return {nb,caps:[...new Set(caps)]}; }
+function kMakeNode(b,p,tm,tt){return {b,p,tm:tm||0,tt:tt||0,visits:0,valueSum:0,children:[],expanded:false}}
+function kExpand(node){ const legal=kMoves(node.b,node.p); node.expanded=true; if(!legal.length){node.children.push({move:null,prior:1,node:null}); return;} const {policy}=kForward(kEncode(node.b,node.p,node.tm,node.tt)); let sum=0; const prs=[]; for(const m of legal){let pr=policy[m.from*8+m.dir]; if(!(pr>1e-6)) pr=1e-6; prs.push(pr); sum+=pr;} for(let k=0;k<legal.length;k++) node.children.push({move:legal[k],prior:prs[k]/sum,node:null}); }
+function kSelect(node){ let best=null,bs=-Infinity; for(const ch of node.children){ const cn=ch.node; const v=cn?cn.visits:0; const q=cn&&v? -cn.valueSum/v:0; const u=1.5*ch.prior*Math.sqrt(node.visits+1)/(1+v); const s=q+u; if(s>bs){bs=s; best=ch;}} return best; }
+function kSim(root){ let node=root; const path=[node]; while(node.expanded && node.children.length){ const sel=kSelect(node); if(!sel.node){ if(!sel.move) sel.node=kMakeNode(node.b.slice(),-node.p,node.tm,node.tt); else { const r=kApply(node.b,sel.move,node.p); sel.node=kMakeNode(r.nb,-node.p,node.tm+(node.p===1?r.caps.length:0),node.tt+(node.p===-1?r.caps.length:0));} } node=sel.node; path.push(node); } let val; if(node.tm>=4||node.tt>=4){ val=((node.tm>=4?1:-1)===node.p)?1:-1; } else { const legal=kMoves(node.b,node.p); if(!legal.length) val=-1; else { val=kPred(node.b,node.p,node.tm,node.tt); kExpand(node); } } for(let i=path.length-1;i>=0;i--){ const cur=path[i]; cur.visits++; cur.valueSum+=val; val=-val; } }
+function kMCTS(b,p,sims,noise=false,tm,tt){ const root=kMakeNode(b.slice(),p,tm===undefined?kTakenMor:tm,tt===undefined?kTakenTur:tt); if(noise){ kExpand(root); if(root.children.length>1){ const dir=sDir(0.3,root.children.length); for(let i=0;i<root.children.length;i++) root.children[i].prior=0.75*root.children[i].prior+0.25*dir[i]; } } for(let i=0;i<sims;i++) kSim(root); const pi=Array(K_POLICY).fill(0); let tot=0; for(const ch of root.children) tot+=ch.node?ch.node.visits:0; if(tot===0) tot=1; let best=null,bv=-1; for(const ch of root.children){ const v=ch.node?ch.node.visits:0; if(ch.move) pi[ch.move.from*8+ch.move.dir]=v/tot; if(v>bv){bv=v; best=ch;} } return {move:best?best.move:null,pi,root}; }
+function kSave(){ if(!currentUserId)return; safeSet(aiKey('KURE_TAM_OGRENME_V1'),JSON.stringify({network:{W1:rnd5(kNet.W1),B1:rnd5(kNet.B1),Wp:rnd5(kNet.Wp),Bp:rnd5(kNet.Bp),Wv:rnd5(kNet.Wv),Bv:kNet.Bv},training:kTraining,myColor:kMyColor})); }
+function kLoad(){ try{ const d=JSON.parse(localStorage.getItem(aiKey('KURE_TAM_OGRENME_V1'))||'null'); if(d&&d.network&&netShapeOk(d.network,K_HIDDEN,K_INPUT,K_POLICY)){ kNet=kCreateNet(); kNet.W1=d.network.W1; kNet.B1=d.network.B1; kNet.Wp=d.network.Wp; kNet.Bp=d.network.Bp; kNet.Wv=d.network.Wv; kNet.Bv=d.network.Bv; if(d.training) kTraining={...kTraining,...d.training}; if(d.myColor===1||d.myColor===-1) kMyColor=d.myColor; } }catch(e){} if(!kNet) kNet=kCreateNet(); }
+function kIsAITurn(){ return kOpponent==='ai' && !kOver && !kMatchOver && kTurn!==kMyColor; }
+function kRender(){ const bd=document.getElementById('kBoard'); if(!bd) return; bd.innerHTML=''; const canPlay=!kIsAITurn() && !kAIThinking; const legal=(canPlay && kSel!==null)?kMoves(kBoard,kTurn).filter(m=>m.from===kSel):[]; for(let i=0;i<49;i++){ const cell=document.createElement('div'); cell.className='cellK'; if(legal.some(m=>m.to===i)) cell.classList.add('legal'); if(kSel===i) cell.classList.add('sel'); if(kBoard[i]!==0){ const s=document.createElement('div'); s.className='stone '+(kBoard[i]===1?'purple':'orange'); cell.appendChild(s); } cell.onclick=()=>kClick(i); bd.appendChild(cell);} const mi=document.getElementById('kMorInfo'); if(mi) mi.textContent='Set '+kSetMor+' • Aldı '+kTakenMor; const ti=document.getElementById('kTurInfo'); if(ti) ti.textContent='Set '+kSetTur+' • Aldı '+kTakenTur; const st=document.getElementById('kStatus'); if(st) st.textContent=kMatchOver?'Maç bitti':kAIThinking?'🧠 AI düşünüyor...':(kTurn===kMyColor?'Senin sıran ('+(kMyColor===1?'Mavi':'Turuncu')+')':'AI sırası'); }
+function kClick(i){
+  if(!kOver && !kMatchOver && !kAIThinking && kTurn===kMyColor && kMoves(kBoard,kTurn).length===0){
+    if(!kMoves(kBoard,-kTurn).length){ kEnd(kTakenMor>=kTakenTur?1:-1); return; }
+    kTurn=-kTurn; kSel=null; kRender(); if(kOpponent==='ai') kMaybeAITurn(); return;
+  }
+  if(kOver||kMatchOver||kAIThinking||kIsAITurn()) return;
+  if(kSel===null){ if(kBoard[i]!==kTurn) return; kSel=i; if(kMode==='tournament') kLocked=i; kRender(); return; }
+  if(i===kSel){ kSel=null; kLocked=null; kRender(); return; }
+  if(kBoard[i]===kTurn){ if(kMode==='tournament'&&kLocked!==null) return; kSel=i; if(kMode==='tournament') kLocked=i; kRender(); return; }
+  const legal=kMoves(kBoard,kTurn).find(m=>m.from===kSel&&m.to===i);
+  if(!legal) return;
+  kDo(legal);
+}
+function kDo(m){
+  kHist.push({board:kBoard.slice(),turn:kTurn,tm:kTakenMor,tt:kTakenTur});
+  const p=kTurn; let policyTarget;
+  if(kOpponent==='ai' && p===kMyColor){ try{ policyTarget=kMCTS(kBoard,p,60,false).pi; }catch(e){} if(policyTarget) aiObserveMove('k',policyTarget,m.from*8+m.dir); }
+  if(!policyTarget){ policyTarget=Array(K_POLICY).fill(0); policyTarget[m.from*8+m.dir]=1; }
+  kTraj.push({x:kEncode(kBoard,p),pi:policyTarget,p});
+  const r=kApply(kBoard,m,p); kBoard=r.nb;
+  if(p===1) kTakenMor+=r.caps.length; else kTakenTur+=r.caps.length;
+  kSel=null; kLocked=null;
+  if(kTakenMor>=4){ kEnd(1); return; }
+  if(kTakenTur>=4){ kEnd(-1); return; }
+  kTurn=-p; kSel=null; kRender();
+  if(!kMoves(kBoard,1).length && !kMoves(kBoard,-1).length){ kEnd(kTakenMor>=kTakenTur?1:-1); return; }
+  kMaybeAITurn();
+}
+function kMaybeAITurn(){
+  if(kOpponent!=='ai'||kOver||kMatchOver||kTurn===kMyColor||kAIThinking) return;
+  kAIThinking=true; kRender(); const tok=kTok;
+  setTimeout(()=>{
+    if(tok!==kTok) return;
+    try{
+      const legal=kMoves(kBoard,kTurn);
+      if(!legal.length){ kAIThinking=false; if(!kMoves(kBoard,-kTurn).length){ kEnd(kTakenMor>=kTakenTur?1:-1); return; } kTurn=-kTurn; kRender(); kMaybeAITurn(); return; }
+      const res=kMCTS(kBoard,kTurn,aiAdaptiveSims('k',60),false);
+      const m=res.move||legal[0]; kAIThinking=false;
+      if(m) kDo(m); else { kAIThinking=false; kTurn=-kTurn; kRender(); }
+    }catch(e){ kAIThinking=false; kRender(); }
+  }, 350);
+}
+function kEnd(w){
+  kOver=true;
+  if(w===1) kSetMor++; else kSetTur++;
+  if(kTraj.length){
+    const out=w===1?1:-1;
+    for(const it of kTraj) kReplay.push({x:it.x,pi:it.pi,z:out*it.p});
+    const batch=[...kTraj.map(it=>({x:it.x,pi:it.pi,z:out*it.p}))];
+    for(let i=0;i<64&&kReplay.length;i++) batch.push(kReplay[Math.floor(Math.random()*kReplay.length)]);
+    kTrainNet(batch,1);
+  }
+  kTraj=[]; kRender();
+  if(kSetMor>=2||kSetTur>=2){
+    kMatchOver=true; kTraining.games++;
+    if(kOpponent==='ai') { const won=((kSetMor>=2?1:-1)===kMyColor); kTraining.humanGames++; if(won) kTraining.wins++; recordGameResult('kure',won?'win':'loss',kHist.length,kStartedAt); kMyColor=-kMyColor; }
+    kSave();
+    document.getElementById('kStatus').textContent='🏆 Maç bitti: '+(kSetMor>=2?'Mavi':'Turuncu')+' kazandı!';
+  } else { const tk=kTok; setTimeout(()=>{ if(tk!==kTok) return; kBoard=kEmpty(); kTurn=1; kTakenMor=0; kTakenTur=0; kSel=null; kHist=[]; kOver=false; kTraj=[]; kRender(); kMaybeAITurn(); },1500); }
+}
+function kNew(){ kTok++; kStartedAt=Date.now(); kSetMor=0; kSetTur=0; kMatchOver=false; kBoard=kEmpty(); kTurn=1; kTakenMor=0; kTakenTur=0; kSel=null; kHist=[]; kOver=false; kTraj=[]; kAIThinking=false; kRender(); kMaybeAITurn(); }
+function kUndo(){ if(kMode==='tournament'||kOver||kMatchOver||kAIThinking) return; let i=kHist.length-1; while(i>=0&&kOpponent==='ai'&&kHist[i].turn!==kMyColor) i--; if(i<0) return; const h=kHist[i]; kTraj.length=Math.max(0,kTraj.length-(kHist.length-i)); kHist.length=i; kBoard=h.board; kTurn=h.turn; kTakenMor=h.tm; kTakenTur=h.tt; kSel=null; kLocked=null; kRender(); }
+function kHint(){ if(kOver||kMatchOver||kAIThinking||kIsAITurn()) return; const r=kMCTS(kBoard,kTurn,100,false); if(r.move){ kSel=r.move.from; kRender(); } }
+function kToggleMode(){ kMode=kMode==='free'?'tournament':'free'; document.getElementById('kModeTxt').textContent=kMode==='free'?'Serbest':'Turnuva'; kSel=null; kLocked=null; kRender(); }
+
+// ---------- ABLUKA ----------
+const AB_N=7, AB_B=1, AB_W=2, AB_X=3; const AB_DIRS=[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1],[1,-1],[1,1]];
+const AB_INPUT=153, AB_HIDDEN=128, AB_POLICY=392, AB_AI_DELAY=250;
+let abOpponent='ai', abBoard, abBlack, abWhite, abTurn, abPhase, abOver, abScore={b:0,w:0};
+let abHistStack=[], abStartedAt=Date.now(), abMyColor=AB_B;
+let abTraining={games:0,wins:0,draws:0,generation:1,humanGames:0}, abReplay=[], abNet=null, abTraj=[], abAIThinking=false;
+let abPendingMove=null, abPendingEncoded=null, abPendingPolicy=null;
+function abEmpty(){return Array.from({length:AB_N},()=>Array(AB_N).fill(0))} function abInside(r,c){return r>=0&&r<AB_N&&c>=0&&c<AB_N}
+function abNeighbors(g,p){const o=[]; for(const [dr,dc] of AB_DIRS){const r=p[0]+dr,c=p[1]+dc; if(abInside(r,c)&&g[r][c]===0) o.push([r,c]);} return o;}
+function abReachable(g,p){ const seen=new Uint8Array(49), q=[p]; seen[p[0]*7+p[1]]=1; let cnt=0; for(let i=0;i<q.length;i++){ const [r,c]=q[i]; cnt++; for(const [dr,dc] of AB_DIRS){ const nr=r+dr,nc=c+dc; if(abInside(nr,nc)&&!seen[nr*7+nc]&&g[nr][nc]===0){seen[nr*7+nc]=1; q.push([nr,nc]);}}} return cnt; }
+function abCreateNet(){const rnd=()=>(Math.random()-.5)*0.12; return {W1:Array.from({length:AB_HIDDEN},()=>Array.from({length:AB_INPUT},rnd)),B1:Array(AB_HIDDEN).fill(0),Wp:Array.from({length:AB_POLICY},()=>Array.from({length:AB_HIDDEN},rnd)),Bp:Array(AB_POLICY).fill(0),Wv:Array(AB_HIDDEN).fill(0),Bv:0,vW1:Array.from({length:AB_HIDDEN},()=>Array(AB_INPUT).fill(0)),vB1:Array(AB_HIDDEN).fill(0),vWp:Array.from({length:AB_POLICY},()=>Array(AB_HIDDEN).fill(0)),vBp:Array(AB_POLICY).fill(0),vWv:Array(AB_HIDDEN).fill(0),vBv:0};}
+function abEncode(g,blk,wht,turn){ const o=[]; const me=turn===AB_B?blk:wht, opp=turn===AB_B?wht:blk; for(let r=0;r<7;r++) for(let c=0;c<7;c++){ const v=g[r][c]; o.push(v===turn?1:0, v===(turn===AB_B?AB_W:AB_B)?1:0, v===AB_X?1:0); } const myM=abNeighbors(g,me).length, opM=abNeighbors(g,opp).length; const myA=abReachable(g,me), opA=abReachable(g,opp); o.push(myM/8,opM/8,myA/49,opA/49,turn===AB_B?1:0,(myA-opA)/49); return o; }
+function abForward(inp,net=abNet){ const h=[]; for(let j=0;j<AB_HIDDEN;j++){let z=net.B1[j]; for(let i=0;i<AB_INPUT;i++) z+=net.W1[j][i]*inp[i]; h[j]=z>0?z:0;} const logits=[]; for(let k=0;k<AB_POLICY;k++){let z=net.Bp[k]; for(let j=0;j<AB_HIDDEN;j++) z+=net.Wp[k][j]*h[j]; logits[k]=z;} const pol=softmax(logits); let v=net.Bv; for(let j=0;j<AB_HIDDEN;j++) v+=net.Wv[j]*h[j]; return {h,policy:pol,value:Math.tanh(v)}; }
+function abPred(g,blk,wht,turn){ return abForward(abEncode(g,blk,wht,turn)).value; }
+function abTrainNet(samples,epochs=1){ if(!samples.length) return; const mom=0.9; let lr=0.005;
+  for(let ep=0;ep<epochs;ep++){ lr=lr*0.999;
+    for(let s of samples){ const x=s.x,pi=s.pi,z=s.z; const {h,policy,value}=abForward(x);
+      const dV=clipG(2*(value-z)*(1-value*value)); const dL=[]; for(let k=0;k<AB_POLICY;k++) dL[k]=clipG(policy[k]-pi[k]);
+      const dh=[]; for(let j=0;j<AB_HIDDEN;j++){let gg=dV*abNet.Wv[j]; for(let k=0;k<AB_POLICY;k++) gg+=dL[k]*abNet.Wp[k][j]; dh[j]=clipG(gg)*(h[j]>0?1:0);}
+      for(let j=0;j<AB_HIDDEN;j++){const gr=clipG(dV*h[j]); abNet.vWv[j]=mom*abNet.vWv[j]-lr*gr; abNet.Wv[j]+=abNet.vWv[j];}
+      abNet.vBv=mom*abNet.vBv-lr*dV; abNet.Bv+=abNet.vBv;
+      for(let k=0;k<AB_POLICY;k++){for(let j=0;j<AB_HIDDEN;j++){const gr=clipG(dL[k]*h[j]); abNet.vWp[k][j]=mom*abNet.vWp[k][j]-lr*gr; abNet.Wp[k][j]+=abNet.vWp[k][j];} abNet.vBp[k]=mom*abNet.vBp[k]-lr*dL[k]; abNet.Bp[k]+=abNet.vBp[k];}
+      for(let j=0;j<AB_HIDDEN;j++){for(let i=0;i<AB_INPUT;i++){const gr=clipG(dh[j]*x[i]); abNet.vW1[j][i]=mom*abNet.vW1[j][i]-lr*gr; abNet.W1[j][i]+=abNet.vW1[j][i];} abNet.vB1[j]=mom*abNet.vB1[j]-lr*dh[j]; abNet.B1[j]+=abNet.vB1[j];}
+    }
+  }
+}
+function abWallCands(g,afterMove,ownPos,oppPos){ const cands=[]; for(let r=0;r<7;r++) for(let c=0;c<7;c++){ if(g[r][c]!==0) continue; const dOpp=Math.abs(r-oppPos[0])+Math.abs(c-oppPos[1]); const dOwn=Math.abs(r-ownPos[0])+Math.abs(c-ownPos[1]); const center=3.5-Math.abs(r-3)-Math.abs(c-3); const score=-dOpp*1.2-dOwn*0.3+center*0.4; cands.push({r,c,score}); } cands.sort((a,b)=>b.score-a.score); return cands.slice(0,10).map(o=>[o.r,o.c]); }
+function abAllMoves(g,blk,wht,turn){ const res=[]; const me=turn===AB_B?blk:wht, opp=turn===AB_B?wht:blk; const neigh=abNeighbors(g,me); for(const mv of neigh){ const dr=mv[0]-me[0], dc=mv[1]-me[1]; let dirIdx=-1; for(let d=0;d<8;d++) if(AB_DIRS[d][0]===dr&&AB_DIRS[d][1]===dc) dirIdx=d; if(dirIdx<0) continue; const g2=JSON.parse(JSON.stringify(g)); g2[me[0]][me[1]]=0; g2[mv[0]][mv[1]]=turn; const walls=abWallCands(g2,mv,mv,opp); for(const wl of walls){ const wallIdx=wl[0]*7+wl[1]; const piIdx=dirIdx*49+wallIdx; res.push({move:mv.slice(),wall:wl.slice(),dir:dirIdx,wallIdx,policyIdx:piIdx}); } } return res; }
+function abApplyMove(g,blk,wht,turn,act){ const ng=JSON.parse(JSON.stringify(g)); const me=turn===AB_B?blk:wht; ng[me[0]][me[1]]=0; ng[act.move[0]][act.move[1]]=turn; ng[act.wall[0]][act.wall[1]]=AB_X; const nBlk=turn===AB_B?act.move.slice():blk.slice(); const nWht=turn===AB_W?act.move.slice():wht.slice(); return {ng,nBlk,nWht}; }
+function abMakeNode(g,blk,wht,turn){return {g,blk,wht,turn,visits:0,valueSum:0,children:[],expanded:false}}
+function abExpand(node){ const legal=abAllMoves(node.g,node.blk,node.wht,node.turn); node.expanded=true; if(!legal.length){node.children.push({move:null,prior:1,node:null}); return;} const {policy}=abForward(abEncode(node.g,node.blk,node.wht,node.turn)); let sum=0; const prs=[]; for(const m of legal){let pr=policy[m.policyIdx]; if(!(pr>1e-6)) pr=1e-6; prs.push(pr); sum+=pr;} for(let k=0;k<legal.length;k++) node.children.push({move:legal[k],prior:prs[k]/sum,node:null}); }
+function abSelect(node){ let best=null,bs=-Infinity; for(const ch of node.children){ const cn=ch.node; const v=cn?cn.visits:0; const q=cn&&v? -cn.valueSum/v:0; const u=1.5*ch.prior*Math.sqrt(node.visits+1)/(1+v); const s=q+u; if(s>bs){bs=s; best=ch;}} return best; }
+function abSimNode(root){ let node=root; const path=[node]; while(node.expanded && node.children.length){ const sel=abSelect(node); if(!sel.node){ if(!sel.move) sel.node=abMakeNode(JSON.parse(JSON.stringify(node.g)),node.blk.slice(),node.wht.slice(),node.turn===AB_B?AB_W:AB_B); else { const r=abApplyMove(node.g,node.blk,node.wht,node.turn,sel.move); sel.node=abMakeNode(r.ng,r.nBlk,r.nWht,node.turn===AB_B?AB_W:AB_B);} } node=sel.node; path.push(node); } let val; const legal=abAllMoves(node.g,node.blk,node.wht,node.turn); if(!legal.length) val=-1; else { val=abPred(node.g,node.blk,node.wht,node.turn); abExpand(node); } for(let i=path.length-1;i>=0;i--){ const cur=path[i]; cur.visits++; cur.valueSum+=val; val=-val; } }
+function abMCTS(g,blk,wht,turn,sims,noise=false){ const root=abMakeNode(JSON.parse(JSON.stringify(g)),blk.slice(),wht.slice(),turn); if(noise){ abExpand(root); if(root.children.length>1){ const dir=sDir(0.3,root.children.length); for(let i=0;i<root.children.length;i++) root.children[i].prior=0.75*root.children[i].prior+0.25*dir[i]; } } for(let i=0;i<sims;i++) abSimNode(root); const pi=Array(AB_POLICY).fill(0); let tot=0; for(const ch of root.children) tot+=ch.node?ch.node.visits:0; if(tot===0) tot=1; let best=null,bv=-1; for(const ch of root.children){ const v=ch.node?ch.node.visits:0; if(ch.move) pi[ch.move.policyIdx]=v/tot; if(v>bv){bv=v; best=ch;} } return {move:best?best.move:null,pi,root}; }
+function abSave(){ if(!currentUserId)return; safeSet(aiKey('ABLUKA_TAM_OGRENME_V1'),JSON.stringify({network:{W1:rnd5(abNet.W1),B1:rnd5(abNet.B1),Wp:rnd5(abNet.Wp),Bp:rnd5(abNet.Bp),Wv:rnd5(abNet.Wv),Bv:abNet.Bv},training:abTraining,myColor:abMyColor})); }
+function abLoad(){ try{ const d=JSON.parse(localStorage.getItem(aiKey('ABLUKA_TAM_OGRENME_V1'))||'null'); if(d&&d.network&&netShapeOk(d.network,AB_HIDDEN,AB_INPUT,AB_POLICY)){ abNet=abCreateNet(); abNet.W1=d.network.W1; abNet.B1=d.network.B1; abNet.Wp=d.network.Wp; abNet.Bp=d.network.Bp; abNet.Wv=d.network.Wv; abNet.Bv=d.network.Bv; if(d.training) abTraining={...abTraining,...d.training}; if(d.myColor===AB_B||d.myColor===AB_W) abMyColor=d.myColor; } }catch(e){} if(!abNet) abNet=abCreateNet(); }
+function abIsAITurn(){ return abOpponent==='ai' && !abOver && abTurn!==abMyColor; }
+function abStart(){
+  abTok++; abBoard=abEmpty(); abBlack=[0,3]; abWhite=[6,3]; abBoard[0][3]=AB_B; abBoard[6][3]=AB_W;
+  abTurn=AB_B; abPhase='move'; abOver=false; abHistStack=[]; abTraj=[]; abAIThinking=false;
+  abPendingMove=null; abPendingEncoded=null; abPendingPolicy=null; aRender();
+  const mm=document.getElementById('aMsg');
+  if(mm){ mm.textContent = (abTurn===abMyColor) ? 'Sen başlıyorsun. Siyah sensin.' : 'AI başlıyor. Sen Beyazsın.'; }
+  if(abIsAITurn()) setTimeout(abAI, AB_AI_DELAY);
+}
+function aNew(){ abStartedAt=Date.now(); abScore={b:0,w:0}; abHistStack=[]; abStart(); }
+function aRender(){
+  const root=document.getElementById('aBoard'); if(!root) return; root.innerHTML='';
+  const moves=new Set(), walls=new Set();
+  const isMyTurn = (abTurn===abMyColor) && !abOver && !abAIThinking;
+  if(isMyTurn){
+    const myPos = abTurn===AB_B ? abBlack : abWhite;
+    if(abPhase==='move') abNeighbors(abBoard,myPos).forEach(p=>moves.add(p[0]*AB_N+p[1]));
+    if(abPhase==='wall') for(let r=0;r<AB_N;r++) for(let c=0;c<AB_N;c++) if(abBoard[r][c]===0) walls.add(r*AB_N+c);
+  }
+  for(let r=0;r<AB_N;r++) for(let c=0;c<AB_N;c++){
+    const el=document.createElement('button'); el.className='cellA';
+    const v=abBoard[r][c];
+    if(v===AB_B) el.classList.add('black'); if(v===AB_W) el.classList.add('white'); if(v===AB_X) el.classList.add('wall');
+    if(moves.has(r*AB_N+c)) el.classList.add('vm'); if(walls.has(r*AB_N+c)) el.classList.add('vw');
+    el.onclick=()=>abClick(r,c); root.appendChild(el);
+  }
+  const sc=document.getElementById('aScore'); if(sc) sc.textContent=abScore.b+' - '+abScore.w;
+  const inf=document.getElementById('aInfo'); if(inf) inf.textContent=abAIThinking?'AI düşünüyor...':'Sıra: '+(abTurn===AB_B?'Siyah':'Beyaz');
+}
+function abClick(r,c){
+  if(abOver||abAIThinking||abIsAITurn()||abTurn!==abMyColor) return;
+  const me=abTurn; const myPos=me===AB_B?abBlack:abWhite;
+  if(abPhase==='move'){
+    if(!abNeighbors(abBoard,myPos).some(p=>p[0]===r&&p[1]===c)) return;
+    abHistStack.push({board:JSON.parse(JSON.stringify(abBoard)),black:abBlack.slice(),white:abWhite.slice(),turn:abTurn,phase:abPhase,tl:abTraj.length});
+    abPendingMove=[r,c]; abPendingEncoded=abEncode(abBoard,abBlack,abWhite,me); abPendingPolicy=null; try{ abPendingPolicy=abMCTS(abBoard,abBlack,abWhite,me,25,false).pi; }catch(e){}
+    abBoard[myPos[0]][myPos[1]]=0;
+    if(me===AB_B) abBlack=[r,c]; else abWhite=[r,c];
+    abBoard[r][c]=me; abPhase='wall'; aRender();
+    const mm=document.getElementById('aMsg'); if(mm) mm.textContent='Şimdi boş bir kareye engel koy.';
+  } else if(abPhase==='wall'){
+    if(abBoard[r][c]!==0) return;
+    if(abPendingMove && abPendingEncoded){
+      const dr=abPendingMove[0]-myPos[0], dc=abPendingMove[1]-myPos[1]; let dirIdx=-1;
+      for(let d=0;d<8;d++) if(AB_DIRS[d][0]===dr && AB_DIRS[d][1]===dc) dirIdx=d;
+      if(dirIdx>=0){ const actionIdx=dirIdx*49+r*7+c; if(abPendingPolicy) aiObserveMove('ab',abPendingPolicy,actionIdx); const pi=Array(AB_POLICY).fill(0); pi[actionIdx]=1; abTraj.push({x:abPendingEncoded,pi:pi,p:me}); }
+    }
+    abPendingMove=null; abPendingEncoded=null; abPendingPolicy=null;
+    abBoard[r][c]=AB_X;
+    const next=me===AB_B?AB_W:AB_B; const nextPos=next===AB_B?abBlack:abWhite;
+    if(!abNeighbors(abBoard,nextPos).length){ abFinish(me); return; }
+    abTurn=next;
+    if(abIsAITurn()){ abPhase='ai'; aRender(); setTimeout(abAI, AB_AI_DELAY); }
+    else { abPhase='move'; aRender(); }
+  }
+}
+function abAI(){
+  if(abOver||abOpponent!=='ai'||abTurn===abMyColor||abAIThinking) return;
+  if(!abNet) abLoad();
+  abAIThinking=true; aRender();
+  const aiColor = abTurn; const tok=abTok;
+  setTimeout(()=>{
+    if(!abAIThinking||tok!==abTok) return;
+    try{
+      const legal=abAllMoves(abBoard,abBlack,abWhite,aiColor);
+      if(!legal.length){ abAIThinking=false; abFinish(aiColor===AB_B?AB_W:AB_B); return; }
+      let a=null, pi=null;
+      try{ const res=abMCTS(abBoard,abBlack,abWhite,aiColor,aiAdaptiveSims('ab',25),false); a=res.move; pi=res.pi; }catch(e){}
+      if(!a) a=legal[Math.floor(Math.random()*legal.length)];
+      if(pi) abTraj.push({x:abEncode(abBoard,abBlack,abWhite,aiColor),pi:pi,p:aiColor});
+      const rr=abApplyMove(abBoard,abBlack,abWhite,aiColor,a);
+      abBoard=rr.ng; abBlack=rr.nBlk; abWhite=rr.nWht;
+      abAIThinking=false; abTurn=abMyColor; abPhase='move'; aRender();
+      const humanPos = abMyColor===AB_B ? abBlack : abWhite;
+      if(!abNeighbors(abBoard,humanPos).length){ abFinish(aiColor); return; }
+      const mm=document.getElementById('aMsg'); if(mm) mm.textContent='Sıra sende ('+(abMyColor===AB_B?'Siyah':'Beyaz')+').';
+    }catch(e){ abAIThinking=false; abTurn=abMyColor; abPhase='move'; aRender(); }
+  }, AB_AI_DELAY);
+}
+function abFinish(w){
+  abOver=true;
+  if(w===AB_B) abScore.b++; else abScore.w++;
+  aRender();
+  if(abScore.b>=2||abScore.w>=2){
+    const matchWinner = abScore.b>=2 ? AB_B : AB_W;
+    const humanWon = (matchWinner === abMyColor);
+    abTraining.games++;
+    if(abOpponent==='ai') {
+      abTraining.humanGames++;
+      if(humanWon) abTraining.wins++;
+      recordGameResult('abluka',humanWon?'win':'loss',abHistStack.length,abStartedAt);
+      abMyColor = (abMyColor===AB_B ? AB_W : AB_B);
+    }
+    const samples=[];
+    for(const it of abTraj){ if(it.pi){ const z = (matchWinner === it.p) ? 1 : -1; samples.push({x:it.x, pi:it.pi, z}); } }
+    if(samples.length) abTrainNet(samples,1);
+    abSave();
+    const mm=document.getElementById('aMsg');
+    if(mm) mm.textContent='🏆 Maç bitti: '+(humanWon?'SEN KAZANDIN!':'AI KAZANDI!')+' Yeni maçta '+(abMyColor===AB_B?'sen başlayacaksın.':'AI başlayacak.');
+  } else {
+    abMyColor = (abMyColor===AB_B ? AB_W : AB_B);
+    const mm=document.getElementById('aMsg'); if(mm) mm.textContent = (w===AB_B?'Siyah':'Beyaz')+' seti aldı! Yeni set başlıyor...';
+    setTimeout(()=>{ if(abOver) abStart(); }, 1100);
+  }
+}
+function aUndo(){ if(!abHistStack.length||abOver||abAIThinking) return; const h=abHistStack.pop(); abBoard=JSON.parse(JSON.stringify(h.board)); abBlack=h.black.slice(); abWhite=h.white.slice(); abTurn=h.turn; abPhase=h.phase; abPendingMove=null; abPendingEncoded=null; abPendingPolicy=null; if(typeof h.tl==='number') abTraj.length=Math.min(abTraj.length,h.tl); aRender(); }
+function aHint(){ if(abAIThinking||(abOpponent==='ai' && abTurn!==abMyColor)||abTurn!==abMyColor||abPhase!=='move'||abOver) return; const res=abMCTS(abBoard,abBlack,abWhite,abTurn,60,false); const a=res.move; if(a){ const mm=document.getElementById('aMsg'); if(mm) mm.textContent='İpucu: '+(a.move[0]+1)+'. satır, '+(a.move[1]+1)+'. sütun'; } }
+
+// ---------- REVERSİ ----------
+const R_N=64, R_HIDDEN=128, R_POLICY=65; const R_DIRS=[[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+let rStartedAt=Date.now(), rOpponent='ai', rMyColor=1, rBoard=[], rPlayer=1, rOver=false, rHist=[], rTraj=[], rNet=null, rTraining={games:0,wins:0,draws:0,generation:1,recent:[],humanGames:0}, rReplay=[], rAIThinking=false;
+function rRc(i){return [Math.floor(i/8),i%8]} function rIdx(r,c){return r*8+c} function rValid(r,c){return r>=0&&r<8&&c>=0&&c<8}
+function rEmpty(){const b=Array(64).fill(0); b[27]=-1; b[28]=1; b[35]=1; b[36]=-1; return b;}
+function rCreate(){const rnd=()=>(Math.random()-.5)*0.12; return {W1:Array.from({length:R_HIDDEN},()=>Array.from({length:R_N},rnd)),B1:Array(R_HIDDEN).fill(0),Wp:Array.from({length:R_POLICY},()=>Array.from({length:R_HIDDEN},rnd)),Bp:Array(R_POLICY).fill(0),Wv:Array(R_HIDDEN).fill(0),Bv:0,vW1:Array.from({length:R_HIDDEN},()=>Array(R_N).fill(0)),vB1:Array(R_HIDDEN).fill(0),vWp:Array.from({length:R_POLICY},()=>Array(R_HIDDEN).fill(0)),vBp:Array(R_POLICY).fill(0),vWv:Array(R_HIDDEN).fill(0),vBv:0};}
+function rEncode(b,p){return b.map(x=>x*p)} function rForward(inp,net=rNet){const h=[]; for(let j=0;j<R_HIDDEN;j++){let z=net.B1[j]; for(let i=0;i<R_N;i++) z+=net.W1[j][i]*inp[i]; h[j]=z>0?z:0;} const logits=[]; for(let k=0;k<R_POLICY;k++){let z=net.Bp[k]; for(let j=0;j<R_HIDDEN;j++) z+=net.Wp[k][j]*h[j]; logits[k]=z;} const pol=softmax(logits); let v=net.Bv; for(let j=0;j<R_HIDDEN;j++) v+=net.Wv[j]*h[j]; return {h,policy:pol,value:Math.tanh(v)};}
+function rPred(b,p){return rForward(rEncode(b,p)).value;}
+function rTrainNet(samples,epochs=1){ if(!samples.length) return; const mom=0.9; let lr=0.005;
+  for(let ep=0;ep<epochs;ep++){ lr=lr*0.999;
+    for(let s of samples){ const x=s.x,pi=s.pi,z=s.z; const {h,policy,value}=rForward(x);
+      const dV=clipG(2*(value-z)*(1-value*value)); const dL=[]; for(let k=0;k<R_POLICY;k++) dL[k]=clipG(policy[k]-pi[k]);
+      const dh=[]; for(let j=0;j<R_HIDDEN;j++){let g=dV*rNet.Wv[j]; for(let k=0;k<R_POLICY;k++) g+=dL[k]*rNet.Wp[k][j]; dh[j]=clipG(g)*(h[j]>0?1:0);}
+      for(let j=0;j<R_HIDDEN;j++){const gr=clipG(dV*h[j]); rNet.vWv[j]=mom*rNet.vWv[j]-lr*gr; rNet.Wv[j]+=rNet.vWv[j];}
+      rNet.vBv=mom*rNet.vBv-lr*dV; rNet.Bv+=rNet.vBv;
+      for(let k=0;k<R_POLICY;k++){for(let j=0;j<R_HIDDEN;j++){const gr=clipG(dL[k]*h[j]); rNet.vWp[k][j]=mom*rNet.vWp[k][j]-lr*gr; rNet.Wp[k][j]+=rNet.vWp[k][j];} rNet.vBp[k]=mom*rNet.vBp[k]-lr*dL[k]; rNet.Bp[k]+=rNet.vBp[k];}
+      for(let j=0;j<R_HIDDEN;j++){for(let i=0;i<R_N;i++){const gr=clipG(dh[j]*x[i]); rNet.vW1[j][i]=mom*rNet.vW1[j][i]-lr*gr; rNet.W1[j][i]+=rNet.vW1[j][i];} rNet.vB1[j]=mom*rNet.vB1[j]-lr*dh[j]; rNet.B1[j]+=rNet.vB1[j];}
+    }
+  }
+}
+function rMoves(b,p){ const res=[]; for(let i=0;i<64;i++){ if(b[i]!==0) continue; const [r,c]=rRc(i); const flips=[]; for(const [dr,dc] of R_DIRS){ let rr=r+dr,cc=c+dc,line=[]; while(rValid(rr,cc)&&b[rIdx(rr,cc)]===-p){line.push(rIdx(rr,cc)); rr+=dr; cc+=dc;} if(line.length&&rValid(rr,cc)&&b[rIdx(rr,cc)]===p) flips.push(...line); } if(flips.length) res.push({i,flips}); } return res; }
+function rApply(b,m,p){ if(m.pass) return b.slice(); const nb=b.slice(); nb[m.i]=p; for(const ii of m.flips) nb[ii]=p; return nb; }
+function rCounts(b){let bl=0,wh=0,em=0; for(const x of b){ if(x===1) bl++; else if(x===-1) wh++; else em++; } return {bl,wh,em};}
+function rMake(b,p){return {b,p,visits:0,valueSum:0,children:[],expanded:false}}
+function rExpand(node){ const legal=rMoves(node.b,node.p); node.expanded=true; if(!legal.length){node.children.push({move:{pass:true},prior:1,node:null}); return;} const {policy}=rForward(rEncode(node.b,node.p)); let sum=0; const prs=[]; for(const m of legal){let pr=policy[m.i]; if(!(pr>1e-6)) pr=1e-6; prs.push(pr); sum+=pr;} for(let k=0;k<legal.length;k++) node.children.push({move:legal[k],prior:prs[k]/sum,node:null}); }
+function rSelect(node){ let best=null,bs=-Infinity; for(const ch of node.children){ const cn=ch.node; const v=cn?cn.visits:0; const q=cn&&v? -cn.valueSum/v:0; const u=1.5*ch.prior*Math.sqrt(node.visits+1)/(1+v); const s=q+u; if(s>bs){bs=s; best=ch;}} return best; }
+function rSim(root){
+  let node=root; const path=[node];
+  while(node.expanded&&node.children.length){ const sel=rSelect(node); if(!sel.node){ const nb=sel.move.pass?node.b.slice():rApply(node.b,sel.move,node.p); sel.node=rMake(nb,-node.p); } node=sel.node; path.push(node); }
+  let val;
+  if(!rMoves(node.b,node.p).length && !rMoves(node.b,-node.p).length){ const c=rCounts(node.b); val=Math.sign(c.bl-c.wh)*node.p; }
+  else { val=rPred(node.b,node.p); rExpand(node); }
+  for(let i=path.length-1;i>=0;i--){ const cur=path[i]; cur.visits++; cur.valueSum+=val; val=-val; }
+}
+function rMCTS(b,p,sims,noise=false){ const root=rMake(b.slice(),p); if(noise){ rExpand(root); if(root.children.length>1){ const dir=sDir(0.3,root.children.length); for(let i=0;i<root.children.length;i++) root.children[i].prior=0.75*root.children[i].prior+0.25*dir[i]; } } for(let i=0;i<sims;i++) rSim(root); const pi=Array(R_POLICY).fill(0); let tot=0; for(const ch of root.children) tot+=ch.node?ch.node.visits:0; if(tot===0) tot=1; let best=null,bv=-1; for(const ch of root.children){ const v=ch.node?ch.node.visits:0; const idx=ch.move.pass?64:ch.move.i; pi[idx]=v/tot; if(v>bv){bv=v; best=ch;} } return {move:best?best.move:null,pi,root}; }
+function rSave(){ if(!currentUserId)return; safeSet(aiKey('REVERSI_EVOLUTION_X_3'),JSON.stringify({network:{W1:rnd5(rNet.W1),B1:rnd5(rNet.B1),Wp:rnd5(rNet.Wp),Bp:rnd5(rNet.Bp),Wv:rnd5(rNet.Wv),Bv:rNet.Bv},training:rTraining,myColor:rMyColor})); }
+function rLoad(){ try{ const d=JSON.parse(localStorage.getItem(aiKey('REVERSI_EVOLUTION_X_3'))||'null'); if(d&&d.network&&netShapeOk(d.network,R_HIDDEN,R_N,R_POLICY)){ rNet=rCreate(); rNet.W1=d.network.W1; rNet.B1=d.network.B1; rNet.Wp=d.network.Wp; rNet.Bp=d.network.Bp; rNet.Wv=d.network.Wv; rNet.Bv=d.network.Bv; if(d.training) rTraining={...rTraining,...d.training}; if(rMyColor===1||rMyColor===-1) rMyColor=rMyColor; } }catch(e){} if(!rNet) rNet=rCreate(); }
+function rRender(){ const bd=document.getElementById('rBoard'); if(!bd) return; bd.innerHTML=''; const legal=rPlayer===rMyColor&&!rOver?rMoves(rBoard,rPlayer):[]; for(let i=0;i<64;i++){ const cell=document.createElement('div'); cell.className='cellR'; if(legal.some(m=>m.i===i)) cell.classList.add('legal'); if(rBoard[i]!==0){ const d=document.createElement('div'); d.className='disc '+(rBoard[i]===1?'b':'w'); cell.appendChild(d); } cell.onclick=()=>rClick(i); bd.appendChild(cell);} const c=rCounts(rBoard); document.getElementById('rBlack').textContent=c.bl; document.getElementById('rWhite').textContent=c.wh; document.getElementById('rEmpty').textContent=c.em; const side=rPlayer===1?'Siyah':'Beyaz'; document.getElementById('rStatus').textContent=rOver?'Oyun bitti':(rPlayer===rMyColor?'Senin sıran: '+side:'AI düşünüyor'); }
+function rClick(i){
+  if(rOver||rAIThinking||rPlayer!==rMyColor) return;
+  const me=rPlayer, m=rMoves(rBoard,me).find(x=>x.i===i); if(!m) return;
+  rHist.push({board:rBoard.slice(),player:rPlayer,tl:rTraj.length});
+  let policyTarget; try{ policyTarget=rMCTS(rBoard,me,60,false).pi; }catch(e){}
+  if(!policyTarget){ policyTarget=Array(65).fill(0); policyTarget[m.i]=1; }
+  if(rOpponent==='ai') aiObserveMove('r',policyTarget,m.i);
+  rTraj.push({x:rEncode(rBoard,me),pi:policyTarget,p:me});
+  rBoard=rApply(rBoard,m,me); rPlayer=-me; rRender();
+  if(!rMoves(rBoard,rPlayer).length){ if(!rMoves(rBoard,me).length){ rFinish(); return; } rPlayer=me; rRender(); return; }
+  if(rIsAITurn()) setTimeout(rAI,200);
+}
+function rIsAITurn(){ return rOpponent==='ai' && !rOver && rPlayer===-rMyColor; }
+function rAI(){
+  const ai=-rMyColor, human=rMyColor;
+  if(rOver||rPlayer!==ai||rAIThinking) return;
+  rAIThinking=true; rRender(); const tok=rTok;
+  setTimeout(()=>{
+    if(tok!==rTok) return;
+    try{
+      const res=rMCTS(rBoard,ai,aiAdaptiveSims('r',60),false), m=res.move;
+      if(!m||m.pass){
+        rAIThinking=false;
+        if(!rMoves(rBoard,human).length){ rFinish(); return; }
+        rPlayer=human; rRender(); return;
+      }
+      rTraj.push({x:rEncode(rBoard,ai),pi:res.pi,p:ai});
+      rBoard=rApply(rBoard,m,ai); rAIThinking=false; rPlayer=human; rRender();
+      if(!rMoves(rBoard,human).length){
+        if(!rMoves(rBoard,ai).length){ rFinish(); return; }
+        rPlayer=ai; rRender(); setTimeout(rAI,250); return;
+      }
+    }catch(e){ rAIThinking=false; rRender(); }
+  },180);
+}
+function rFinish(){
+  rOver=true; const c=rCounts(rBoard), humanScore=rMyColor===1?c.bl:c.wh, aiScore=rMyColor===1?c.wh:c.bl;
+  document.getElementById('rStatus').textContent=humanScore>aiScore?'🏆 Kazandın!':aiScore>humanScore?'🧠 AI kazandı!':'Berabere!';
+  if(rTraj.length){
+    const out=Math.sign(c.bl-c.wh);
+    for(const it of rTraj) rReplay.push({x:it.x,pi:it.pi,z:out*it.p});
+    if(rOpponent==='ai'){ rTraining.humanGames++; if(humanScore>aiScore) rTraining.wins++; }
+    const batch=[...rTraj.map(it=>({x:it.x,pi:it.pi,z:out*it.p}))];
+    for(let i=0;i<128&&rReplay.length;i++){ batch.push(rReplay[Math.floor(Math.random()*rReplay.length)]); }
+    rTrainNet(batch,1); rTraining.games++;
+  }
+  if(rOpponent==='ai'){ const outcome=humanScore>aiScore?'win':humanScore<aiScore?'loss':'draw'; recordGameResult('reversi',outcome,rHist.length,rStartedAt); rMyColor=-rMyColor; }
+  rSave(); rTraj=[];
+}
+function rNew(){ rTok++; rStartedAt=Date.now(); rBoard=rEmpty(); rPlayer=1; rOver=false; rAIThinking=false; rHist=[]; rTraj=[]; rRender(); if(rIsAITurn()) setTimeout(rAI,250); }
+function rUndo(){ if(!rHist.length||rOver||rAIThinking) return; const h=rHist.pop(); rBoard=h.board; rPlayer=h.player; if(typeof h.tl==='number') rTraj.length=Math.min(rTraj.length,h.tl); rRender(); }
+function rHint(){ if(rOver||rPlayer!==rMyColor) return; const res=rMCTS(rBoard,rMyColor,60,false); if(res.move&&!res.move.pass){ document.getElementById('rStatus').textContent='İpucu: '+(rRc(res.move.i)[0]+1)+'. satır, '+(rRc(res.move.i)[1]+1)+'. sütun'; } }
+
+function initAllModels(){
+  try{
+    cancelAllAI();
+    kLoad(); kNew();
+    abLoad(); aNew();
+    rLoad(); rNew();
+  }catch(e){}
+}
+
+// ---------- YÖNETİCİ ÖZEL AI EĞİTİM FONKSİYONU ----------
+function trainAIForUser(username){
+  const oldUser = currentUserId;
+  currentUserId = username;
+  kLoad(); abLoad(); rLoad();
+  
+  alert('@' + username + ' adlı öğrencinin oyun profil verilerine göre AI adaptasyonu başlatılıyor...');
+  try {
+    kSave(); abSave(); rSave();
+    alert('@' + username + ' için AI modeli başarıyla eğitildi ve öğrencinin profiline kaydedildi!');
+  } catch(e) {
+    alert('Eğitim hatası: ' + e.message);
+  } finally {
+    currentUserId = oldUser;
+    kLoad(); abLoad(); rLoad();
+  }
+}
+
+// ---------- KULLANICI / YÖNETİCİ VE NPOINT BULUT SENKRONİZASYONU ----------
+const ADMIN_PASS = 'zekaoyunlarial';
+const USERS_KEY = 'ZEKA_USERS_V2';
+const MATCHES_KEY = 'ZEKA_MACLAR_V2';
+const SESSION_KEY = 'ZEKA_SESSION_V2';
+const TOMB_KEY = 'ZEKA_TOMBS_V1';
+const USER_RE = /^[a-z0-9_\-]{2,20}$/;
+
+function loadTombs(){ try{ const t=JSON.parse(localStorage.getItem(TOMB_KEY)||'null'); if(t&&typeof t==='object') return {deleted:t.deleted||{}, resetAt:t.resetAt||{}}; }catch(e){} return {deleted:{}, resetAt:{}}; }
+function saveTombs(t){ safeSet(TOMB_KEY, JSON.stringify(t)); }
+function tombMark(kind,key){ const t=loadTombs(); t[kind][key]=Date.now(); saveTombs(t); }
+function loadUsers(){ try{ const a=JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); if(Array.isArray(a)&&a.length) return a; }catch(e){} return []; }
+function saveUsers(arr){ safeSet(USERS_KEY, JSON.stringify(arr)); }
+function seedUsers(){ if(loadUsers().length) return; saveUsers([{username:'ogrenci', name:'Örnek Öğrenci', password:'1234', createdAt:1, updatedAt:1}]); }
+function findUser(u){ const n=String(u||'').trim().toLowerCase(); return loadUsers().find(x=>x.username===n); }
+function loadMatches(){ try{ const a=JSON.parse(localStorage.getItem(MATCHES_KEY)||'[]'); return Array.isArray(a)?a:[]; }catch(e){ return []; } }
+function saveMatches(arr){ safeSet(MATCHES_KEY, JSON.stringify(arr.slice(-5000))); }
+function saveSession(){ try{ if(currentRole) localStorage.setItem(SESSION_KEY, JSON.stringify({role:currentRole, username:currentUserId, name:currentUser})); else localStorage.removeItem(SESSION_KEY); }catch(e){} }
+
+function statsForUser(username){
+  const rows = loadMatches().filter(r=>r.username===String(username||'').toLowerCase());
+  const wins=rows.filter(r=>r.result==='win').length, losses=rows.filter(r=>r.result==='loss').length, draws=rows.filter(r=>r.result==='draw').length;
+  const per={kure:{t:0,w:0,l:0,d:0}, abluka:{t:0,w:0,l:0,d:0}, reversi:{t:0,w:0,l:0,d:0}};
+  rows.forEach(r=>{ const k=r.game==='kure'?'kure':r.game==='abluka'?'abluka':r.game==='reversi'?'reversi':null; if(!k) return; per[k].t++; if(r.result==='win') per[k].w++; if(r.result==='loss') per[k].l++; if(r.result==='draw') per[k].d++; });
+  let last=0; rows.forEach(r=>{ if(r.playedAt&&r.playedAt>last) last=r.playedAt; });
+  let level='Yeni Başlangıç'; if(wins>=10) level='Zeka Ustası'; else if(wins>=5) level='İleri Seviye'; else if(wins>=2) level='Gelişiyor'; else if(rows.length>0) level='Başlangıç';
+  const winRate = rows.length? Math.round(wins/rows.length*100):0;
+  return {rows,total:rows.length,wins,losses,draws,per,last,level,winRate};
+}
+function fmtDate(ts){ if(!ts||ts<1e11) return '-'; const d=new Date(ts); return d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); }
+function gameName(g){ return g==='kure'?'KÜRE':g==='abluka'?'ABLUKA':g==='reversi'?'REVERSİ':g; }
+
+function updateTopBar(){
+  const txt=document.getElementById('topUserText'), btns=document.getElementById('topUserBtns'); if(!txt||!btns) return;
+  if(!currentRole){ txt.textContent='Giriş yapılmadı'; btns.innerHTML='<button class="ghost" style="padding:8px 12px;min-height:36px" onclick="showView(\'login\')">Giriş Yap</button>'; return; }
+  const roleTxt = currentRole==='yonetici'?'YÖNETİCİ':'KULLANICI';
+  txt.innerHTML='<b>'+escapeHtml(currentUser)+'</b> • '+roleTxt+' (@'+escapeHtml(currentUserId)+')';
+  let h='';
+  if(currentRole==='yonetici') h+='<button class="ghost" style="padding:8px 12px;min-height:36px" onclick="goToAdmin()">Yönetici Paneli</button>';
+  h+='<button class="ghost" style="padding:8px 12px;min-height:36px" onclick="goToHub()">Oyunlar</button>';
+  h+='<button style="padding:8px 12px;min-height:36px;background:#dc2626" onclick="logout()">Çıkış</button>';
+  btns.innerHTML=h;
+}
+
+function showView(name){
+  ['loginView','adminView','hubView','gameKure','gameAbluka','gameReversi'].forEach(id=>{ const e=document.getElementById(id); if(e) e.classList.add('hidden'); });
+  if(name==='login'){ const e=document.getElementById('loginView'); if(e) e.classList.remove('hidden'); }
+  if(name==='admin'){ const e=document.getElementById('adminView'); if(e) e.classList.remove('hidden'); renderAdminPanel(); }
+  if(name==='hub'){ const e=document.getElementById('hubView'); if(e) e.classList.remove('hidden'); const wn=document.getElementById('welcomeName'); if(wn) wn.textContent=currentUser; const ab=document.getElementById('hubAdminBtn'); if(ab) ab.style.display = currentRole==='yonetici'?'':'none'; renderLocalStats(); }
+  updateTopBar(); window.scrollTo(0,0);
+}
+
+function switchLoginTab(which){
+  const tk=document.getElementById('tabKullanici'), ty=document.getElementById('tabYonetici');
+  const lk=document.getElementById('loginKullanici'), ly=document.getElementById('loginYonetici');
+  if(tk) tk.classList.toggle('active', which==='kullanici'); if(ty) ty.classList.toggle('active', which==='yonetici');
+  if(lk) lk.classList.toggle('hidden', which!=='kullanici'); if(ly) ly.classList.toggle('hidden', which!=='yonetici');
+}
+
+async function loginAsUser(){
+  const uEl=document.getElementById('loginUserName'), pEl=document.getElementById('loginUserPass'), err=document.getElementById('loginUserErr');
+  const u=String(uEl.value||'').trim().toLowerCase(), p=String(pEl.value||'');
+  if(!u||!p){ if(err) err.textContent='Kullanıcı adı ve şifre gerekli.'; return; }
+  if(err) err.textContent='Kontrol ediliyor...';
+  await cloudLoadAll();
+  const user=findUser(u);
+  if(!user){ if(err) err.textContent='Kullanıcı bulunamadı.'; return; }
+  if(user.password!==p){ if(err) err.textContent='Şifre yanlış.'; return; }
+  currentUserId=user.username; currentUser=user.name||user.username; currentRole='kullanici';
+  if(err) err.textContent=''; if(pEl) pEl.value='';
+  saveSession();
+  initAllModels();
+  showView('hub');
+}
+
+function loginAsAdmin(){
+  const pEl=document.getElementById('loginAdminPass'), err=document.getElementById('loginAdminErr');
+  if(String(pEl.value||'')!==ADMIN_PASS){ if(err) err.textContent='Yönetici şifresi yanlış.'; return; }
+  currentUserId='yonetici'; currentUser='Yönetici'; currentRole='yonetici';
+  if(err) err.textContent=''; if(pEl) pEl.value='';
+  saveSession();
+  initAllModels();
+  cloudLoadAll().then(()=>renderAdminPanel());
+  showView('admin');
+}
+
+function logout(){
+  cancelAllAI();
+  currentUserId='misafir'; currentUser='Oyuncu'; currentRole=null;
+  try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
+  showView('login');
+}
+function goToHub(){ if(!currentRole){ showView('login'); return; } showView('hub'); }
+function goToAdmin(){ if(currentRole!=='yonetici'){ showView('login'); return; } showView('admin'); }
+
+async function addUserFromForm(){
+  const nameEl=document.getElementById('newUserName'), userEl=document.getElementById('newUserUsername'), passEl=document.getElementById('newUserPass'), msg=document.getElementById('addUserMsg');
+  const name=String(nameEl.value||'').trim(), username=String(userEl.value||'').trim().toLowerCase(), pass=String(passEl.value||'').trim();
+  if(!name||!username||!pass){ if(msg) msg.textContent='Ad, kullanıcı adı ve şifre gerekli.'; return; }
+  if(!USER_RE.test(username)){ if(msg) msg.textContent='Kullanıcı adı geçerli değil.'; return; }
+  const users=loadUsers();
+  if(users.some(u=>u.username===username)){ if(msg) msg.textContent='Bu kullanıcı adı zaten var.'; return; }
+  
+  users.push({username, name, password:pass, createdAt:Date.now(), updatedAt:Date.now()});
+  saveUsers(users);
+  
+  if(nameEl) nameEl.value=''; if(userEl) userEl.value=''; if(passEl) passEl.value='';
+  renderAdminPanel();
+  
+  if(msg) msg.textContent='Npoint bulutuna yükleniyor...';
+  const success = await cloudSaveAll();
+  
+  if(success){
+    if(msg) msg.textContent='';
+    alert('Kullanıcı eklendi ve Npoint bulutuna kaydedildi! Diğer telefondan giriş yapabilirsiniz.');
+  } else {
+    if(msg) msg.textContent='Buluta kayıt başarısız!';
+    alert('Uyarı: Npoint Bin ID ayarını kontrol edin veya internet bağlantınızı gözden geçirin.');
+  }
+}
+
+function renderAdminPanel(){
+  const gen=document.getElementById('adminGeneral'), list=document.getElementById('adminUserList'); if(!gen||!list) return;
+  const users=loadUsers(), matches=loadMatches();
+  const wins=matches.filter(r=>r.result==='win').length, losses=matches.filter(r=>r.result==='loss').length, draws=matches.filter(r=>r.result==='draw').length;
+  gen.innerHTML='<div class="row"><div class="stat"><b>TOPLAM KULLANICI</b><span>'+users.length+'</span></div><div class="stat"><b>TOPLAM MAÇ</b><span>'+matches.length+'</span></div><div class="stat"><b>KAZANMA</b><span>'+wins+'</span></div><div class="stat"><b>KAYBETME</b><span>'+losses+'</span></div><div class="stat"><b>BERABERE</b><span>'+draws+'</span></div></div>';
+  if(!users.length){ list.innerHTML='<p style="color:#c4b5fd;font-size:13px">Henüz kullanıcı yok.</p>'; return; }
+  let html='';
+  users.forEach(u=>{
+    const s=statsForUser(u.username);
+    const recent=s.rows.slice(-3).reverse();
+    let recentHtml = recent.length ? recent.map(r=>'<div class="recent-match"><span>'+gameName(r.game)+' • '+(r.result==='win'?'Kazandı':r.result==='loss'?'Kaybetti':'Berabere')+'</span><span>'+fmtDate(r.playedAt)+'</span></div>').join('') : '<div style="font-size:12px;color:#c4b5fd">Henüz maç yok.</div>';
+    html+='<div class="userRow"><div class="userRowTop"><div><b>'+escapeHtml(u.name)+'</b> <span style="color:#c4b5fd">@'+escapeHtml(u.username)+'</span> <span class="pill green">'+escapeHtml(s.level)+'</span></div><div style="display:flex;gap:6px;flex-wrap:wrap"><button class="green" data-act="trainAI" data-u="'+escapeHtml(u.username)+'">🧠 Bu Öğrenciye Göre AI Eğit</button><button class="ghost" data-act="pass" data-u="'+escapeHtml(u.username)+'">Şifre</button><button class="orange" data-act="clr" data-u="'+escapeHtml(u.username)+'">Sıfırla</button><button class="red" data-act="del" data-u="'+escapeHtml(u.username)+'">Sil</button></div></div><div style="font-size:12px;color:#c4b5fd;margin-top:6px">Şifre: <b style="color:#fff">'+escapeHtml(u.password)+'</b> • Son oyun: '+fmtDate(s.last)+'</div><div class="miniStat"><div><b>TOPLAM</b><span>'+s.total+'</span></div><div><b>KAZANMA</b><span>'+s.wins+'</span></div><div><b>KAYBETME</b><span>'+s.losses+'</span></div><div><b>BAŞARI</b><span>%'+s.winRate+'</span></div></div><div class="gameBreak"><div><b>KÜRE</b>'+s.per.kure.t+' maç</div><div><b>ABLUKA</b>'+s.per.abluka.t+' maç</div><div><b>REVERSİ</b>'+s.per.reversi.t+' maç</div></div><div style="margin-top:8px"><b style="font-size:12px">Son Maçlar:</b>'+recentHtml+'</div></div>';
+  });
+  list.innerHTML=html;
+}
+
+function deleteUser(username){
+  if(!confirm('@'+username+' silinsin mi?')) return; tombMark('deleted',username);
+  saveUsers(loadUsers().filter(u=>u.username!==username));
+  saveMatches(loadMatches().filter(r=>r.username!==username));
+  renderAdminPanel(); cloudSaveAll();
+}
+function resetUserPass(username){
+  const np=prompt('@'+username+' için yeni şifre:', '1234'); if(!np) return;
+  const users=loadUsers(), u=users.find(x=>x.username===username); if(!u) return;
+  u.password=String(np).trim(); u.updatedAt=Date.now(); saveUsers(users); renderAdminPanel(); cloudSaveAll();
+}
+function clearUserReport(username){
+  if(!confirm('@'+username+' raporu sıfırlansın mı?')) return; tombMark('resetAt',username);
+  saveMatches(loadMatches().filter(r=>r.username!==username)); renderAdminPanel(); renderLocalStats(); cloudSaveAll();
+}
+function clearAllReports(){
+  if(!confirm('Tüm raporlar sıfırlansın mı?')) return; tombMark('resetAt','*');
+  saveMatches([]); renderAdminPanel(); renderLocalStats(); cloudSaveAll();
+}
+
+function recordGameResult(game,result,moves,startedAt){
+  if(!currentRole) return;
+  const row={username:String(currentUserId||'misafir').toLowerCase(), name:currentUser, game, result, moves:Math.max(0,Number(moves)||0), duration:Math.max(0,Math.round((Date.now()-(startedAt||Date.now()))/1000)), playedAt:Date.now()};
+  const rows=loadMatches(); rows.push(row); saveMatches(rows);
+  renderLocalStats();
+  if(currentRole==='yonetici') renderAdminPanel();
+  cloudSaveDebounced();
+}
+
+function renderLocalStats(){
+  const el=document.getElementById('localStats'); if(!el) return;
+  if(!currentRole){ el.innerHTML='<p style="color:#c4b5fd;font-size:13px">Giriş yapılmadı.</p>'; return; }
+  const s=statsForUser(currentUserId);
+  el.innerHTML='<div class="row"><div class="stat"><b>TOPLAM MAÇ</b><span>'+s.total+'</span></div><div class="stat"><b>KAZANMA</b><span>'+s.wins+'</span></div><div class="stat"><b>KAYBETME</b><span>'+s.losses+'</span></div><div class="stat"><b>BERABERE</b><span>'+s.draws+'</span></div></div><div style="font-size:12px;color:#c4b5fd;margin-top:6px;text-align:center">Seviye: <b style="color:#fff">'+s.level+'</b> • Başarı: %'+s.winRate+'</div>';
+  const pg=document.getElementById('myPerGame'); if(pg){ pg.innerHTML='<div class="gameBreak"><div><b>KÜRE</b>'+s.per.kure.t+' maç</div><div><b>ABLUKA</b>'+s.per.abluka.t+' maç</div><div><b>REVERSİ</b>'+s.per.reversi.t+' maç</div></div>'; }
+  const wn=document.getElementById('welcomeName'); if(wn) wn.textContent=currentUser;
+}
+
+function openGame(which){
+  if(!currentRole){ showView('login'); alert('Önce giriş yapmalısınız.'); return; }
+  document.getElementById('hubView').classList.add('hidden');
+  ['kure','abluka','reversi'].forEach(g=>document.getElementById('game'+(g==='kure'?'Kure':g==='abluka'?'Abluka':'Reversi')).classList.add('hidden'));
+  const id='game'+(which==='kure'?'Kure':which==='abluka'?'Abluka':'Reversi');
+  document.getElementById(id).classList.remove('hidden');
+  window.scrollTo(0,0);
+  if(which==='kure') kRender(); if(which==='abluka') aRender(); if(which==='reversi') rRender();
+}
+function backHub(){
+  ['Kure','Abluka','Reversi'].forEach(g=>document.getElementById('game'+g).classList.add('hidden'));
+  if(!currentRole){ showView('login'); return; }
+  document.getElementById('hubView').classList.remove('hidden'); renderLocalStats(); window.scrollTo(0,0);
+}
+
+// ---------- NPOINT.IO BULUT SENKRONİZASYON MOTORU ----------
+const NPOINT_BASE = 'https://api.npoint.io/';
+const CLOUD_TIMEOUT = 6000;
+let cloudSaveTimer = null, cloudBusy = null, cloudDirty = false;
+
+async function cloudFetch(url, opts){
+  const ctl = (typeof AbortController!=='undefined') ? new AbortController() : null;
+  const t = ctl ? setTimeout(()=>ctl.abort(), CLOUD_TIMEOUT) : null;
+  try{ return await fetch(url, Object.assign({}, opts||{}, ctl?{signal:ctl.signal}:{})); }
+  finally{ if(t) clearTimeout(t); }
+}
+
+async function cloudGet(key){
+  if(!NPOINT_BIN_ID || NPOINT_BIN_ID.startsWith('BURAYA')){ return {status:'missing'}; }
+  try{
+    const r = await cloudFetch(NPOINT_BASE + NPOINT_BIN_ID, {method:'GET', cache:'no-store'});
+    if(!r.ok) return {status:'error'};
+    const data = await r.json();
+    return {status:'ok', data: data};
+  }catch(e){ return {status:'error'}; }
+}
+
+async function cloudSet(key, obj){
+  if(!NPOINT_BIN_ID || NPOINT_BIN_ID.startsWith('BURAYA')){ return false; }
+  try{
+    const r = await cloudFetch(NPOINT_BASE + NPOINT_BIN_ID, {
+      method:'POST',
+      body: JSON.stringify(obj),
+      headers:{'Content-Type':'application/json'}
+    });
+    return r.ok;
+  }catch(e){ return false; }
+}
+
+function mergeCloud(data){
+  const before = (localStorage.getItem(USERS_KEY)||'') + '#' + (localStorage.getItem(MATCHES_KEY)||'');
+  const tombs = loadTombs(), ct = (data && data.tombs) || {};
+  ['deleted','resetAt'].forEach(k=>{
+    const src = ct[k] || {};
+    Object.keys(src).forEach(n=>{
+      if(n!=='*' && !USER_RE.test(n)) return;
+      const v = Number(src[n]) || 0; if(v > (tombs[k][n]||0)) tombs[k][n] = v;
+    });
+  });
+  saveTombs(tombs);
+  let users = loadUsers();
+  (Array.isArray(data&&data.users) ? data.users : []).forEach(nu=>{
+    if(!nu || typeof nu.username!=='string') return;
+    const un = nu.username.trim().toLowerCase(); if(!USER_RE.test(un)) return;
+    const ex = users.find(u=>u.username===un);
+    if(!ex){
+      users.push({username:un, name:String(nu.name||un).slice(0,60), password:String(nu.password||'1234').slice(0,60), createdAt:Number(nu.createdAt)||Date.now(), updatedAt:Number(nu.updatedAt)||Number(nu.createdAt)||0});
+    } else if((Number(nu.updatedAt)||0) > (ex.updatedAt||0)){
+      ex.name = String(nu.name||ex.name).slice(0,60); ex.password = String(nu.password||ex.password).slice(0,60); ex.updatedAt = Number(nu.updatedAt);
+    }
+  });
+  users = users.filter(u=>{ const d = tombs.deleted[u.username]; return !(d && d >= (u.createdAt||0)); });
+  saveUsers(users);
+  const seen = {}, all = [];
+  function add(m){
+    if(!m || typeof m.username!=='string') return;
+    if(['kure','abluka','reversi'].indexOf(m.game)<0 || ['win','loss','draw'].indexOf(m.result)<0) return;
+    const k = m.username+'|'+m.playedAt+'|'+m.game+'|'+m.result+'|'+m.moves;
+    if(seen[k]) return; seen[k]=1; all.push(m);
+  }
+  loadMatches().forEach(add); (Array.isArray(data&&data.matches) ? data.matches : []).forEach(add);
+  const kept = all.filter(m=>{
+    const t = Math.max(tombs.resetAt['*']||0, tombs.resetAt[m.username]||0);
+    return !(t && (Number(m.playedAt)||0) <= t);
+  });
+  kept.sort((a,b)=>(Number(a.playedAt)||0)-(Number(b.playedAt)||0));
+  saveMatches(kept);
+  return before !== ((localStorage.getItem(USERS_KEY)||'') + '#' + (localStorage.getItem(MATCHES_KEY)||''));
+}
+
+async function cloudSaveAll(){
+  if(!NPOINT_BIN_ID || NPOINT_BIN_ID.startsWith('BURAYA')) return false;
+  if(cloudBusy){ cloudDirty = true; return cloudBusy; }
+  cloudBusy = (async function(){
+    try{
+      const g = await cloudGet('data_v2');
+      if(g.status==='error') return false;
+      let existingData = (g.status==='ok' && g.data) ? g.data : {};
+      mergeCloud(existingData);
+      return await cloudSet('data_v2', {
+        users: loadUsers(),
+        matches: loadMatches().slice(-2000),
+        tombs: loadTombs(),
+        updatedAt: Date.now()
+      });
+    }catch(e){ return false; }
+    finally{ cloudBusy = null; if(cloudDirty){ cloudDirty = false; setTimeout(cloudSaveAll, 50); } }
+  })();
+  return cloudBusy;
+}
+
+async function cloudLoadAll(){
+  if(!NPOINT_BIN_ID || NPOINT_BIN_ID.startsWith('BURAYA')) return false;
+  const g = await cloudGet('data_v2');
+  if(g.status==='error') return false;
+  if(g.status==='missing' || !g.data || !Array.isArray(g.data.users)){ await cloudSaveAll(); return false; }
+  if(mergeCloud(g.data)){
+    if(currentRole==='yonetici') renderAdminPanel(); else if(currentRole) renderLocalStats();
+  }
+  return true;
+}
+
+async function cloudLoadAndRefresh(){
+  if(!NPOINT_BIN_ID || NPOINT_BIN_ID.startsWith('BURAYA')){
+    alert('Lütfen kodun başındaki NPOINT_BIN_ID alanına npoint.io adresinden aldığınız ID\'yi yazın!');
+    return;
+  }
+  const success = await cloudLoadAll();
+  if(success){
+    if(currentRole==='yonetici') renderAdminPanel(); else if(currentRole) renderLocalStats();
+    alert('Npoint bulutundan veriler başarıyla çekildi ve güncellendi!');
+  } else {
+    alert('Npoint bulutundan veri çekilemedi! Bin ID\'nizi ve internet bağlantınızı kontrol edin.');
+  }
+}
+
+function cloudSaveDebounced(){ if(cloudSaveTimer) clearTimeout(cloudSaveTimer); cloudSaveTimer=setTimeout(()=>cloudSaveAll(), 700); }
+
+function initAuth(){
+  seedUsers();
+  let sess=null; try{ sess=JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }catch(e){}
+  if(sess&&sess.role==='yonetici'){
+    currentUserId='yonetici'; currentUser='Yönetici'; currentRole='yonetici';
+    initAllModels(); showView('admin'); return;
+  }
+  if(sess&&sess.role==='kullanici'&&sess.username){
+    const u=findUser(sess.username);
+    if(u){ currentUserId=u.username; currentUser=u.name||u.username; currentRole='kullanici'; initAllModels(); showView('hub'); return; }
+  }
+  currentUserId='misafir'; currentUser='Oyuncu'; currentRole=null;
+  showView('login');
+}
+
+(function(){
+  const l=document.getElementById('adminUserList');
+  if(l) l.addEventListener('click',function(ev){
+    const b=ev.target.closest&&ev.target.closest('button[data-act]'); if(!b) return;
+    const u=b.getAttribute('data-u'), a=b.getAttribute('data-act');
+    if(a==='pass') resetUserPass(u);
+    else if(a==='clr') clearUserReport(u);
+    else if(a==='del') deleteUser(u);
+    else if(a==='trainAI') trainAIForUser(u);
+  });
+})();
+
+initAuth();
+cloudLoadAll();
+setInterval(()=>{ if(!document.hidden) cloudLoadAll(); }, 15000);
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) cloudLoadAll(); });
+</script>
+</body>
+</html>
